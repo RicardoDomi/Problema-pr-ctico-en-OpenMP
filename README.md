@@ -1,0 +1,1 @@
+# Problema-pr-ctico-en-OpenMP
