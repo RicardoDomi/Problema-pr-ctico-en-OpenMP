@@ -1,4 +1,3 @@
-# Problema-pr-ctico-en-OpenMP
 # Búsqueda exhaustiva secuencial y paralela con OpenMP
 
 Práctica de implementación y comparación de una búsqueda exhaustiva de claves de prueba, desarrollando una versión secuencial y otra paralela utilizando OpenMP.
