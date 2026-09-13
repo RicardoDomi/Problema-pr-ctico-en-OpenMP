@@ -10,16 +10,21 @@ private:
     int cantidadCaracteres;
     int longitud;
 
-    bool caracterValido(char c);
+    bool caracterValido(char caracter);
 
 public:
+   
     BusquedaExhaustiva(int longitudClave);
+
+
     ~BusquedaExhaustiva();
 
     unsigned long long calcularCombinaciones();
 
+  
     bool validarClave(std::string clave);
 
+  
     std::string numeroAClave(unsigned long long numero);
 
     double busquedaSecuencial(

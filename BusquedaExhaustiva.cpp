@@ -1,10 +1,27 @@
 #include "BusquedaExhaustiva.h"
 
 #include <iostream>
+#include <iomanip>
 #include <omp.h>
 
 using namespace std;
 
+
+
+struct DatosHilo
+{
+    unsigned long long inicio;
+    unsigned long long fin;
+    unsigned long long cantidad;
+    unsigned long long revisadas;
+
+    int resultado;
+};
+
+
+// ============================================================
+// CONSTRUCTOR
+// ============================================================
 
 BusquedaExhaustiva::BusquedaExhaustiva(int longitudClave)
 {
@@ -12,9 +29,11 @@ BusquedaExhaustiva::BusquedaExhaustiva(int longitudClave)
 
     cantidadCaracteres = 36;
 
+    // Arreglo dinamico
     caracteres = new char[cantidadCaracteres];
 
-    string conjunto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    string conjunto =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     for (int i = 0; i < cantidadCaracteres; i++)
     {
@@ -23,6 +42,9 @@ BusquedaExhaustiva::BusquedaExhaustiva(int longitudClave)
 }
 
 
+// ============================================================
+// DESTRUCTOR
+// ============================================================
 
 BusquedaExhaustiva::~BusquedaExhaustiva()
 {
@@ -30,24 +52,32 @@ BusquedaExhaustiva::~BusquedaExhaustiva()
 }
 
 
+// ============================================================
+// CALCULAR TOTAL DE COMBINACIONES
+// ============================================================
+
 unsigned long long BusquedaExhaustiva::calcularCombinaciones()
 {
     unsigned long long total = 1;
 
     for (int i = 0; i < longitud; i++)
     {
-        total *= cantidadCaracteres;
+        total = total * cantidadCaracteres;
     }
 
     return total;
 }
 
 
-bool BusquedaExhaustiva::caracterValido(char c)
+// ============================================================
+// COMPROBAR SI UN CARACTER ES VALIDO
+// ============================================================
+
+bool BusquedaExhaustiva::caracterValido(char caracter)
 {
     for (int i = 0; i < cantidadCaracteres; i++)
     {
-        if (caracteres[i] == c)
+        if (caracteres[i] == caracter)
         {
             return true;
         }
@@ -57,30 +87,38 @@ bool BusquedaExhaustiva::caracterValido(char c)
 }
 
 
+// ============================================================
+// VALIDAR CLAVE
+// ============================================================
 
 bool BusquedaExhaustiva::validarClave(string clave)
 {
     if (clave.empty())
     {
-        cout << "Error: la clave no puede estar vacia.\n";
+        cout << "\nError: la clave no puede estar vacia.\n";
         return false;
     }
 
+
     if ((int)clave.length() != longitud)
     {
-        cout << "Error: la clave debe tener "
+        cout << "\nError: la clave debe tener exactamente "
              << longitud
              << " caracteres.\n";
 
         return false;
     }
 
+
     for (int i = 0; i < (int)clave.length(); i++)
     {
         if (!caracterValido(clave[i]))
         {
-            cout << "Error: caracter no permitido: "
-                 << clave[i] << endl;
+            cout << "\nError: el caracter '"
+                 << clave[i]
+                 << "' no esta permitido.\n";
+
+            cout << "Solo se permiten A-Z y 0-9.\n";
 
             return false;
         }
@@ -90,70 +128,76 @@ bool BusquedaExhaustiva::validarClave(string clave)
 }
 
 
-string BusquedaExhaustiva::numeroAClave(unsigned long long numero)
+// ============================================================
+// CONVERTIR NUMERO A CLAVE
+// ============================================================
+
+string BusquedaExhaustiva::numeroAClave(
+    unsigned long long numero)
 {
     string clave(longitud, 'A');
 
     for (int i = longitud - 1; i >= 0; i--)
     {
-        clave[i] = caracteres[numero % cantidadCaracteres];
+        int posicion =
+            numero % cantidadCaracteres;
 
-        numero = numero / cantidadCaracteres;
+        clave[i] = caracteres[posicion];
+
+        numero =
+            numero / cantidadCaracteres;
     }
 
     return clave;
 }
 
 
-// ========================================
+// ============================================================
 // BUSQUEDA SECUENCIAL
-// ========================================
+// ============================================================
 
 double BusquedaExhaustiva::busquedaSecuencial(
     string objetivo,
     unsigned long long& revisadas)
 {
-    unsigned long long total = calcularCombinaciones();
+    unsigned long long total =
+        calcularCombinaciones();
 
     revisadas = 0;
 
-    cout << "\n========================================\n";
-    cout << "        BUSQUEDA SECUENCIAL\n";
-    cout << "========================================\n";
 
-    double inicio = omp_get_wtime();
+    double inicio =
+        omp_get_wtime();
 
-    for (unsigned long long i = 0; i < total; i++)
+
+    for (unsigned long long i = 0;
+         i < total;
+         i++)
     {
-        string actual = numeroAClave(i);
+        string actual =
+            numeroAClave(i);
 
         revisadas++;
 
+
         if (actual == objetivo)
         {
-            double fin = omp_get_wtime();
-
-            cout << "Clave encontrada: "
-                 << actual << endl;
-
-            cout << "Combinaciones revisadas: "
-                 << revisadas << endl;
-
-            return fin - inicio;
+            break;
         }
     }
 
-    double fin = omp_get_wtime();
 
-    cout << "Clave no encontrada.\n";
+    double fin =
+        omp_get_wtime();
+
 
     return fin - inicio;
 }
 
 
-// ========================================
+// ============================================================
 // BUSQUEDA PARALELA
-// ========================================
+// ============================================================
 
 double BusquedaExhaustiva::busquedaParalela(
     string objetivo,
@@ -161,9 +205,13 @@ double BusquedaExhaustiva::busquedaParalela(
     unsigned long long& revisadasTotales,
     int& hilosUtilizados)
 {
-    unsigned long long total = calcularCombinaciones();
+    unsigned long long total =
+        calcularCombinaciones();
 
+
+   
     int encontrada = 0;
+
 
     hiloGanador = -1;
 
@@ -171,97 +219,126 @@ double BusquedaExhaustiva::busquedaParalela(
 
     hilosUtilizados = 0;
 
-    string claveEncontrada = "";
 
-    cout << "\n========================================\n";
-    cout << "         BUSQUEDA PARALELA\n";
-    cout << "========================================\n";
+    int maxHilos =
+        omp_get_max_threads();
 
-    double inicioTiempo = omp_get_wtime();
 
-    #pragma omp parallel shared(encontrada, hiloGanador, claveEncontrada, revisadasTotales, hilosUtilizados)
+
+    DatosHilo* datos =
+        new DatosHilo[maxHilos];
+
+
+    double inicioTiempo =
+        omp_get_wtime();
+
+
+    // ========================================================
+    // REGION PARALELA
+    // ========================================================
+
+    #pragma omp parallel shared(encontrada, hiloGanador, datos, revisadasTotales, hilosUtilizados)
     {
-        int hilo = omp_get_thread_num();
+        int hilo =
+            omp_get_thread_num();
 
-        int totalHilos = omp_get_num_threads();
+
+        int totalHilos =
+            omp_get_num_threads();
+
 
         #pragma omp single
         {
-            hilosUtilizados = totalHilos;
+            hilosUtilizados =
+                totalHilos;
         }
 
 
-  
+        // ----------------------------------------------------
+        // DIVIDIR EL ESPACIO DE BUSQUEDA
+        // ----------------------------------------------------
+
         unsigned long long base =
             total / totalHilos;
+
 
         unsigned long long sobrantes =
             total % totalHilos;
 
 
-        unsigned long long inicio;
+        unsigned long long inicioRango;
+
         unsigned long long cantidad;
 
 
- 
+     
         if ((unsigned long long)hilo < sobrantes)
         {
-            cantidad = base + 1;
+            cantidad =
+                base + 1;
 
-            inicio =
-                hilo * cantidad;
+
+            inicioRango =
+                (unsigned long long)hilo
+                * cantidad;
         }
         else
         {
-            cantidad = base;
+            cantidad =
+                base;
 
-            inicio =
+
+            inicioRango =
                 sobrantes * (base + 1)
-                + (hilo - sobrantes) * base;
+                +
+                ((unsigned long long)hilo - sobrantes)
+                * base;
         }
 
 
-        unsigned long long fin =
-            inicio + cantidad - 1;
+        unsigned long long finRango =
+            inicioRango + cantidad - 1;
 
 
-        string claveInicio =
-            numeroAClave(inicio);
+        datos[hilo].inicio =
+            inicioRango;
 
-        string claveFin =
-            numeroAClave(fin);
+        datos[hilo].fin =
+            finRango;
+
+        datos[hilo].cantidad =
+            cantidad;
+
+        datos[hilo].revisadas =
+            0;
+
+        datos[hilo].resultado =
+            0;
 
 
-        #pragma omp critical
+        bool detenido =
+            false;
+
+
+        // ----------------------------------------------------
+        // BUSQUEDA DEL HILO
+        // ----------------------------------------------------
+
+        for (unsigned long long i = inicioRango;
+             i <= finRango;
+             i++)
         {
-            cout << "\nHilo " << hilo
-                 << " -> Inicio: " << claveInicio
-                 << " -> Fin: " << claveFin
-                 << " -> Cantidad: " << cantidad
-                 << endl;
-
-            cout << "Hilo "
-                 << hilo
-                 << " inicio su busqueda.\n";
-        }
+            int terminar;
 
 
-        unsigned long long revisadasHilo = 0;
-
-        bool encontroEsteHilo = false;
-
-
-        for (unsigned long long i = inicio; i <= fin; i++)
-        {
-            int detener;
-
-         
+ 
             #pragma omp atomic read
-            detener = encontrada;
+            terminar = encontrada;
 
 
-            if (detener == 1)
+            if (terminar == 1)
             {
+                detenido = true;
                 break;
             }
 
@@ -269,81 +346,129 @@ double BusquedaExhaustiva::busquedaParalela(
             string actual =
                 numeroAClave(i);
 
-            revisadasHilo++;
+
+            datos[hilo].revisadas++;
 
 
             if (actual == objetivo)
             {
-                #pragma omp critical
+               
+                #pragma omp atomic write
+                encontrada = 1;
+
+
+             
+                #pragma omp critical(registroGanador)
                 {
-                    int yaEncontrada;
-
-                    #pragma omp atomic read
-                    yaEncontrada = encontrada;
-
-
-                    if (yaEncontrada == 0)
+                    if (hiloGanador == -1)
                     {
-                        hiloGanador = hilo;
+                        hiloGanador =
+                            hilo;
 
-                        claveEncontrada = actual;
-
-                        encontroEsteHilo = true;
-
-                        #pragma omp atomic write
-                        encontrada = 1;
+                        datos[hilo].resultado =
+                            1;
                     }
                 }
+
 
                 break;
             }
         }
 
 
-
-        #pragma omp atomic
-        revisadasTotales += revisadasHilo;
-
-
-
-        #pragma omp critical
+        if (detenido)
         {
-            cout << "Hilo "
-                 << hilo
-                 << " finalizo.";
-
-            if (encontroEsteHilo)
-            {
-                cout << " ENCONTRO LA CLAVE.";
-            }
-            else
-            {
-                cout << " No encontro la clave.";
-            }
-
-            cout << "\nCombinaciones revisadas: "
-                 << revisadasHilo
-                 << endl;
+            datos[hilo].resultado =
+                2;
         }
+
+
+
+        #pragma omp atomic update
+        revisadasTotales +=
+            datos[hilo].revisadas;
     }
 
 
-    double finTiempo = omp_get_wtime();
+    double finTiempo =
+        omp_get_wtime();
 
 
-    if (hiloGanador != -1)
+    // ========================================================
+    // TABLA DE DISTRIBUCION DE RANGOS
+    // ========================================================
+
+    cout << "\n";
+
+    cout
+        << "=====================================================================================\n";
+
+    cout
+        << "                         DISTRIBUCION DE LOS RANGOS\n";
+
+    cout
+        << "=====================================================================================\n";
+
+
+    cout << left
+         << setw(8)  << "Hilo"
+         << setw(15) << "Inicio"
+         << setw(15) << "Fin"
+         << setw(18) << "Cantidad"
+         << setw(20) << "Resultado"
+         << endl;
+
+
+    cout
+        << "-------------------------------------------------------------------------------------\n";
+
+
+    for (int i = 0;
+         i < hilosUtilizados;
+         i++)
     {
-        cout << "\nClave encontrada: "
-             << claveEncontrada << endl;
+        string resultado;
 
-        cout << "Clave encontrada por el hilo: "
-             << hiloGanador << endl;
+
+        if (datos[i].resultado == 1)
+        {
+            resultado =
+                "Encontrada";
+        }
+        else if (datos[i].resultado == 2)
+        {
+            resultado =
+                "Detenido";
+        }
+        else
+        {
+            resultado =
+                "No encontrada";
+        }
+
+
+        cout << left
+             << setw(8) << i
+             << setw(15)
+             << numeroAClave(datos[i].inicio)
+             << setw(15)
+             << numeroAClave(datos[i].fin)
+             << setw(18)
+             << datos[i].cantidad
+             << setw(20)
+             << resultado
+             << endl;
     }
-    else
-    {
-        cout << "\nClave no encontrada.\n";
-    }
 
 
-    return finTiempo - inicioTiempo;
+    cout
+        << "=====================================================================================\n";
+
+
+
+    delete[] datos;
+
+
+    return finTiempo -
+           inicioTiempo;
 }

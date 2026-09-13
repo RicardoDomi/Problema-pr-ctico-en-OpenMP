@@ -1,240 +1,622 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
+#include <sstream>
 
 #include "BusquedaExhaustiva.h"
 
 using namespace std;
 
 
-int main()
+// ============================================================
+// LEER UN NUMERO ENTERO DE FORMA SEGURA
+// ============================================================
+
+int leerEntero(
+    string mensaje,
+    int minimo,
+    int maximo)
 {
-    int longitud;
+    string linea;
 
-    cout << "========================================\n";
-    cout << "   BUSQUEDA EXHAUSTIVA CON OPENMP\n";
-    cout << "========================================\n";
+    int numero;
 
-    cout << "Caracteres permitidos:\n";
-    cout << "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n";
+    char extra;
 
 
-   
-    do
+    while (true)
     {
-        cout << "\nIngresa la longitud de la clave (1 - 10): ";
-        cin >> longitud;
+        cout << mensaje;
 
-        if (longitud < 1 || longitud > 10)
+        getline(cin, linea);
+
+        stringstream entrada(linea);
+
+
+        if (entrada >> numero &&
+            !(entrada >> extra) &&
+            numero >= minimo &&
+            numero <= maximo)
         {
-            cout << "Longitud no valida.\n";
+            return numero;
         }
 
-    } while (longitud < 1 || longitud > 10);
+
+        cout << "Entrada no valida. Intenta nuevamente.\n";
+    }
+}
 
 
-    BusquedaExhaustiva buscador(longitud);
+// ============================================================
+// PEDIR UNA CLAVE VALIDA
+// ============================================================
 
-
+string pedirClave(
+    BusquedaExhaustiva& buscador,
+    int longitud)
+{
     string clave;
 
 
-
-    do
+    while (true)
     {
-        cout << "Ingresa una clave de prueba de "
+        cout << "\nIngresa una clave de prueba de "
              << longitud
              << " caracteres: ";
 
-        cin >> clave;
-
-    } while (!buscador.validarClave(clave));
+        getline(cin, clave);
 
 
-    unsigned long long total =
-        buscador.calcularCombinaciones();
+        if (buscador.validarClave(clave))
+        {
+            return clave;
+        }
+    }
+}
 
 
-    cout << "\n========================================\n";
-    cout << "DATOS\n";
-    cout << "========================================\n";
+// ============================================================
+// MOSTRAR TABLA PARA VERSION SECUENCIAL
+// ============================================================
 
-    cout << "Clave: "
-         << clave << endl;
+void mostrarResultadoSecuencial(
+    int ejecucion,
+    int longitud,
+    double tiempo)
+{
+    cout << "\n";
 
-    cout << "Longitud: "
-         << longitud << endl;
+    cout
+        << "=====================================================================================\n";
 
-    cout << "Combinaciones posibles: "
-         << total << endl;
+    cout
+        << "                                   RESULTADOS\n";
+
+    cout
+        << "=====================================================================================\n";
 
 
-    int opcion;
+    cout << left
+         << setw(12) << "Ejecucion"
+         << setw(12) << "Longitud"
+         << setw(18) << "Version"
+         << setw(10) << "Hilos"
+         << setw(18) << "Tiempo(s)"
+         << setw(15) << "Hilo ganador"
+         << endl;
 
 
-    do
+    cout
+        << "-------------------------------------------------------------------------------------\n";
+
+
+    cout << fixed
+         << setprecision(6);
+
+
+    cout << left
+         << setw(12) << ejecucion
+         << setw(12) << longitud
+         << setw(18) << "Secuencial"
+         << setw(10) << 1
+         << setw(18) << tiempo
+         << setw(15) << "---"
+         << endl;
+
+
+    cout
+        << "=====================================================================================\n";
+}
+
+
+// ============================================================
+// MOSTRAR TABLA PARA VERSION PARALELA
+// ============================================================
+
+void mostrarResultadoParalelo(
+    int ejecucion,
+    int longitud,
+    int hilos,
+    double tiempo,
+    int hiloGanador)
+{
+    cout << "\n";
+
+    cout
+        << "=====================================================================================\n";
+
+    cout
+        << "                                   RESULTADOS\n";
+
+    cout
+        << "=====================================================================================\n";
+
+
+    cout << left
+         << setw(12) << "Ejecucion"
+         << setw(12) << "Longitud"
+         << setw(18) << "Version"
+         << setw(10) << "Hilos"
+         << setw(18) << "Tiempo(s)"
+         << setw(15) << "Hilo ganador"
+         << endl;
+
+
+    cout
+        << "-------------------------------------------------------------------------------------\n";
+
+
+    cout << fixed
+         << setprecision(6);
+
+
+    cout << left
+         << setw(12) << ejecucion
+         << setw(12) << longitud
+         << setw(18) << "Paralela"
+         << setw(10) << hilos
+         << setw(18) << tiempo
+         << setw(15) << hiloGanador
+         << endl;
+
+
+    cout
+        << "=====================================================================================\n";
+}
+
+
+// ============================================================
+// MOSTRAR COMPARACION
+// ============================================================
+
+void mostrarComparacion(
+    int ejecucion,
+    int longitud,
+    double tiempoSecuencial,
+    double tiempoParalelo,
+    int hilos,
+    int hiloGanador)
+{
+    cout << "\n";
+
+    cout
+        << "=====================================================================================\n";
+
+    cout
+        << "                                   RESULTADOS\n";
+
+    cout
+        << "=====================================================================================\n";
+
+
+    cout << left
+         << setw(12) << "Ejecucion"
+         << setw(12) << "Longitud"
+         << setw(18) << "Version"
+         << setw(10) << "Hilos"
+         << setw(18) << "Tiempo(s)"
+         << setw(15) << "Hilo ganador"
+         << endl;
+
+
+    cout
+        << "-------------------------------------------------------------------------------------\n";
+
+
+    cout << fixed
+         << setprecision(6);
+
+
+    cout << left
+         << setw(12) << ejecucion
+         << setw(12) << longitud
+         << setw(18) << "Secuencial"
+         << setw(10) << 1
+         << setw(18) << tiempoSecuencial
+         << setw(15) << "---"
+         << endl;
+
+
+    cout << left
+         << setw(12) << ejecucion
+         << setw(12) << longitud
+         << setw(18) << "Paralela"
+         << setw(10) << hilos
+         << setw(18) << tiempoParalelo
+         << setw(15) << hiloGanador
+         << endl;
+
+
+    cout
+        << "=====================================================================================\n";
+
+
+    if (tiempoParalelo > 0)
     {
-        cout << "\n========================================\n";
-        cout << "MENU\n";
-        cout << "========================================\n";
-
-        cout << "1. Busqueda secuencial\n";
-        cout << "2. Busqueda paralela\n";
-        cout << "3. Comparar ambas versiones\n";
-        cout << "4. Salir\n";
-
-        cout << "\nSelecciona una opcion: ";
-
-        cin >> opcion;
+        double speedup =
+            tiempoSecuencial /
+            tiempoParalelo;
 
 
-        // ========================================
-        // SECUENCIAL
-        // ========================================
+        cout << "\nSpeedup = "
+             << tiempoSecuencial
+             << " / "
+             << tiempoParalelo
+             << " = "
+             << speedup
+             << "x\n";
 
-        if (opcion == 1)
+
+        if (speedup > 1)
         {
-            unsigned long long revisadas;
-
-            double tiempo =
-                buscador.busquedaSecuencial(
-                    clave,
-                    revisadas
-                );
-
-
-            cout << "\nTiempo secuencial: "
-                 << tiempo
-                 << " segundos\n";
+            cout
+                << "La version paralela fue mas rapida.\n";
         }
-
-
-        // ========================================
-        // PARALELA
-        // ========================================
-
-        else if (opcion == 2)
+        else
         {
-            int hiloGanador;
-
-            int hilosUtilizados;
-
-            unsigned long long revisadas;
-
-
-            double tiempo =
-                buscador.busquedaParalela(
-                    clave,
-                    hiloGanador,
-                    revisadas,
-                    hilosUtilizados
-                );
-
-
-            cout << "\nTiempo paralelo: "
-                 << tiempo
-                 << " segundos\n";
-
-            cout << "Hilos utilizados: "
-                 << hilosUtilizados << endl;
-
-            cout << "Hilo ganador: "
-                 << hiloGanador << endl;
+            cout
+                << "La version paralela no obtuvo mejora en esta ejecucion.\n";
         }
+    }
+}
 
 
-        // ========================================
-        // COMPARACION
-        // ========================================
+// ============================================================
+// MAIN
+// ============================================================
 
-        else if (opcion == 3)
+int main()
+{
+    int numeroEjecucion =
+        1;
+
+
+    bool salir =
+        false;
+
+
+    cout
+        << "============================================================\n";
+
+    cout
+        << "          BUSQUEDA EXHAUSTIVA CON OPENMP\n";
+
+    cout
+        << "============================================================\n";
+
+    cout
+        << "Caracteres permitidos:\n";
+
+    cout
+        << "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n";
+
+
+    while (!salir)
+    {
+        cout << "\n";
+        cout
+            << "============================================================\n";
+
+        cout
+            << "CONFIGURACION DE LA EJECUCION "
+            << numeroEjecucion
+            << endl;
+
+        cout
+            << "============================================================\n";
+
+
+        int longitud =
+            leerEntero(
+                "Ingresa la longitud de la clave (1 - 10): ",
+                1,
+                10
+            );
+
+
+        BusquedaExhaustiva buscador(
+            longitud
+        );
+
+
+        string clave =
+            pedirClave(
+                buscador,
+                longitud
+            );
+
+
+        unsigned long long total =
+            buscador.calcularCombinaciones();
+
+
+        cout << "\n";
+
+        cout
+            << "============================================================\n";
+
+        cout
+            << "                     DATOS DE LA PRUEBA\n";
+
+        cout
+            << "============================================================\n";
+
+
+        cout << left
+             << setw(30) << "Ejecucion:"
+             << numeroEjecucion
+             << endl;
+
+
+        cout << setw(30)
+             << "Clave de prueba:"
+             << clave
+             << endl;
+
+
+        cout << setw(30)
+             << "Longitud:"
+             << longitud
+             << endl;
+
+
+        cout << setw(30)
+             << "Caracteres disponibles:"
+             << 36
+             << endl;
+
+
+        cout << setw(30)
+             << "Combinaciones posibles:"
+             << total
+             << endl;
+
+
+        cout
+            << "============================================================\n";
+
+
+        bool cambiarClave =
+            false;
+
+
+        while (!salir && !cambiarClave)
         {
-            unsigned long long revisadasSecuencial;
+            cout << "\n";
 
-            unsigned long long revisadasParalelo;
+            cout
+                << "====================== MENU ======================\n";
 
-            int hiloGanador;
+            cout
+                << "1. Ejecutar busqueda secuencial\n";
 
-            int hilosUtilizados;
+            cout
+                << "2. Ejecutar busqueda paralela\n";
+
+            cout
+                << "3. Comparar ambas versiones\n";
+
+            cout
+                << "4. Realizar nueva ejecucion\n";
+
+            cout
+                << "5. Salir\n";
+
+            cout
+                << "==================================================\n";
 
 
-            double tiempoSecuencial =
-                buscador.busquedaSecuencial(
-                    clave,
-                    revisadasSecuencial
+            int opcion =
+                leerEntero(
+                    "Selecciona una opcion: ",
+                    1,
+                    5
                 );
 
 
-            double tiempoParalelo =
-                buscador.busquedaParalela(
-                    clave,
-                    hiloGanador,
-                    revisadasParalelo,
-                    hilosUtilizados
-                );
+            // =================================================
+            // OPCION 1 - SECUENCIAL
+            // =================================================
 
-
-            cout << "\n========================================\n";
-            cout << "      COMPARACION DE RESULTADOS\n";
-            cout << "========================================\n";
-
-
-            cout << "Clave: "
-                 << clave << endl;
-
-            cout << "Combinaciones posibles: "
-                 << total << endl;
-
-
-            cout << "\nTiempo secuencial: "
-                 << tiempoSecuencial
-                 << " segundos\n";
-
-
-            cout << "Tiempo paralelo: "
-                 << tiempoParalelo
-                 << " segundos\n";
-
-
-            cout << "Hilos utilizados: "
-                 << hilosUtilizados
-                 << endl;
-
-
-            cout << "Hilo ganador: "
-                 << hiloGanador
-                 << endl;
-
-
-            if (tiempoParalelo > 0)
+            if (opcion == 1)
             {
-                double speedup =
-                    tiempoSecuencial /
-                    tiempoParalelo;
+                unsigned long long revisadas;
 
 
-                cout << "Speedup: "
-                     << speedup
-                     << "x\n";
+                double tiempo =
+                    buscador.busquedaSecuencial(
+                        clave,
+                        revisadas
+                    );
+
+
+                mostrarResultadoSecuencial(
+                    numeroEjecucion,
+                    longitud,
+                    tiempo
+                );
+
+
+                cout << "\nCombinaciones revisadas: "
+                     << revisadas
+                     << endl;
+
+
+                cout << "Clave encontrada: "
+                     << clave
+                     << endl;
             }
 
 
-            cout << "========================================\n";
+            // =================================================
+            // OPCION 2 - PARALELA
+            // =================================================
+
+            else if (opcion == 2)
+            {
+                int hiloGanador;
+
+                int hilosUtilizados;
+
+                unsigned long long revisadas;
+
+
+                double tiempo =
+                    buscador.busquedaParalela(
+                        clave,
+                        hiloGanador,
+                        revisadas,
+                        hilosUtilizados
+                    );
+
+
+                mostrarResultadoParalelo(
+                    numeroEjecucion,
+                    longitud,
+                    hilosUtilizados,
+                    tiempo,
+                    hiloGanador
+                );
+
+
+                cout << "\nCombinaciones revisadas entre todos los hilos: "
+                     << revisadas
+                     << endl;
+
+
+                cout << "Clave encontrada: "
+                     << clave
+                     << endl;
+
+
+                cout << "Clave encontrada por el hilo: "
+                     << hiloGanador
+                     << endl;
+            }
+
+
+            // =================================================
+            // OPCION 3 - COMPARAR
+            // =================================================
+
+            else if (opcion == 3)
+            {
+                unsigned long long revisadasSecuencial;
+
+                unsigned long long revisadasParalelo;
+
+
+                int hiloGanador;
+
+                int hilosUtilizados;
+
+
+                // ---------------------------------------------
+                // SECUENCIAL
+                // ---------------------------------------------
+
+                double tiempoSecuencial =
+                    buscador.busquedaSecuencial(
+                        clave,
+                        revisadasSecuencial
+                    );
+
+
+                // ---------------------------------------------
+                // PARALELA
+                // ---------------------------------------------
+
+                double tiempoParalelo =
+                    buscador.busquedaParalela(
+                        clave,
+                        hiloGanador,
+                        revisadasParalelo,
+                        hilosUtilizados
+                    );
+
+
+                // ---------------------------------------------
+                // TABLA FINAL
+                // ---------------------------------------------
+
+                mostrarComparacion(
+                    numeroEjecucion,
+                    longitud,
+                    tiempoSecuencial,
+                    tiempoParalelo,
+                    hilosUtilizados,
+                    hiloGanador
+                );
+
+
+                cout << "\nClave encontrada: "
+                     << clave
+                     << endl;
+
+
+                cout << "Combinaciones revisadas secuencial: "
+                     << revisadasSecuencial
+                     << endl;
+
+
+                cout << "Combinaciones revisadas paralelo: "
+                     << revisadasParalelo
+                     << endl;
+
+
+                cout << "Clave encontrada por el hilo: "
+                     << hiloGanador
+                     << endl;
+            }
+
+
+            // =================================================
+            // OPCION 4 - NUEVA EJECUCION
+            // =================================================
+
+            else if (opcion == 4)
+            {
+                numeroEjecucion++;
+
+                cambiarClave =
+                    true;
+            }
+
+
+            // =================================================
+            // OPCION 5 - SALIR
+            // =================================================
+
+            else if (opcion == 5)
+            {
+                salir =
+                    true;
+            }
         }
+    }
 
 
-        else if (opcion == 4)
-        {
-            cout << "\nPrograma finalizado.\n";
-        }
-
-
-        else
-        {
-            cout << "\nOpcion no valida.\n";
-        }
-
-
-    } while (opcion != 4);
+    cout << "\nPrograma finalizado.\n";
 
 
     return 0;
