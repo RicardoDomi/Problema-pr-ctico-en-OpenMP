@@ -15,6 +15,9 @@ struct DatosHilo
     unsigned long long cantidad;
     unsigned long long revisadas;
 
+    double tiempoInicio;
+    double tiempoFin;
+
     int resultado;
 };
 
@@ -247,6 +250,10 @@ double BusquedaExhaustiva::busquedaParalela(
             omp_get_num_threads();
 
 
+        datos[hilo].tiempoInicio =
+            omp_get_wtime() - inicioTiempo;
+
+
         #pragma omp single
         {
             hilosUtilizados =
@@ -387,11 +394,64 @@ double BusquedaExhaustiva::busquedaParalela(
         #pragma omp atomic update
         revisadasTotales +=
             datos[hilo].revisadas;
+
+
+        datos[hilo].tiempoFin =
+            omp_get_wtime() - inicioTiempo;
     }
 
 
     double finTiempo =
         omp_get_wtime();
+
+
+    // ========================================================
+    // MOSTRAR INICIO Y FINALIZACION DE LOS HILOS
+    // ========================================================
+
+    cout << "\n";
+
+    cout
+        << "=====================================================================================\n";
+
+    cout
+        << "                         CICLO DE VIDA DE LOS HILOS\n";
+
+    cout
+        << "=====================================================================================\n";
+
+
+    cout << left
+         << setw(8)  << "Hilo"
+         << setw(20) << "Inicio(s)"
+         << setw(20) << "Finalizacion(s)"
+         << setw(25) << "Estado"
+         << endl;
+
+
+    cout
+        << "-------------------------------------------------------------------------------------\n";
+
+
+    cout << fixed
+         << setprecision(6);
+
+
+    for (int i = 0;
+         i < hilosUtilizados;
+         i++)
+    {
+        cout << left
+             << setw(8)  << i
+             << setw(20) << datos[i].tiempoInicio
+             << setw(20) << datos[i].tiempoFin
+             << setw(25) << "Iniciado -> Finalizado"
+             << endl;
+    }
+
+
+    cout
+        << "=====================================================================================\n";
 
 
     // ========================================================
@@ -412,8 +472,8 @@ double BusquedaExhaustiva::busquedaParalela(
 
     cout << left
          << setw(8)  << "Hilo"
-         << setw(15) << "Inicio"
-         << setw(15) << "Fin"
+         << setw(15) << "Primera comb."
+         << setw(15) << "Ultima comb."
          << setw(18) << "Cantidad"
          << setw(20) << "Resultado"
          << endl;
