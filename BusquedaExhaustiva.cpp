@@ -213,7 +213,7 @@ double BusquedaExhaustiva::busquedaParalela(
 
 
    
-    int encontrada = 0;
+    int encontrada = 0; // hilos consultan estas variables
 
 
     hiloGanador = -1;
@@ -254,7 +254,7 @@ double BusquedaExhaustiva::busquedaParalela(
             omp_get_wtime() - inicioTiempo;
 
 
-        #pragma omp single
+        #pragma omp single // un solo hilo registra los hilos totales registrados 
         {
             hilosUtilizados =
                 totalHilos;
@@ -265,17 +265,17 @@ double BusquedaExhaustiva::busquedaParalela(
         // DIVIDIR EL ESPACIO DE BUSQUEDA
         // ----------------------------------------------------
 
-        unsigned long long base =
+        unsigned long long base = // el total de combinaciones se divide entre los hilos
             total / totalHilos;
 
 
         unsigned long long sobrantes =
-            total % totalHilos;
+            total % totalHilos; // los que sobran son agregados a los primeros hilos 
 
 
-        unsigned long long inicioRango;
+        unsigned long long inicioRango; // rango de seccion por hilo a buscar entre caracteres
 
-        unsigned long long cantidad;
+        unsigned long long cantidad; // cantidad de caracteres a buscar por hilo
 
 
      
@@ -339,11 +339,11 @@ double BusquedaExhaustiva::busquedaParalela(
 
 
  
-            #pragma omp atomic read
-            terminar = encontrada;
+            #pragma omp atomic read // mecanismo de sincronizacion o concurrencia
+            terminar = encontrada; // se actualiza atomicamente si ya fue encontrado por algun hilo
 
 
-            if (terminar == 1)
+            if (terminar == 1) // si el hilo encontro la clave termina
             {
                 detenido = true;
                 break;
@@ -366,7 +366,7 @@ double BusquedaExhaustiva::busquedaParalela(
 
              
                 #pragma omp critical(registroGanador)
-                {
+                {// El hilo cambia la variable compartida para comunicarles a los demás que deben detenerse.
                     if (hiloGanador == -1)
                     {
                         hiloGanador =
