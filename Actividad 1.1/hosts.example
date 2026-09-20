@@ -1,0 +1,4 @@
+# Sustituir estos alias por los nombres SSH o direcciones Tailscale reales.
+maestro slots=1
+esclavo-1 slots=1
+esclavo-2 slots=1
