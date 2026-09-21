@@ -12,7 +12,7 @@
 #include <string>
 
 class ArregloDinamico { // claese
-    std::size_t n_;
+    std::size_t n_; 
     int* datos_;
 
 public:
@@ -106,6 +106,7 @@ public:
 
     unsigned long long verificar() const {
         unsigned long long suma = 0;
+        
         int invalido = 0;
 
         #pragma omp parallel for reduction(+:suma) reduction(|:invalido)
@@ -151,11 +152,11 @@ int main(int argc, char** argv) {
     if (setenv("OMPI_MPI_THREAD_LEVEL", "1", 1) != 0) {
         return 1;
     }
-    MPI_Init(&argc, &argv);
+    MPI_Init(&argc, &argv); // inicializacion de MPI 
 #else
-    int solicitado;
-    MPI_Init_thread(&argc, &argv, MPI_THREAD_FUNNELED, &solicitado);
-#endif
+    int solicitado; // OpenMP puede crear múltiples hilos.
+    MPI_Init_thread(&argc, &argv, MPI_THREAD_FUNNELED, &solicitado); // solo el hilo prinicipal realiza llamadas mpi
+#endif 
 
     int rango;
     int procesos;
@@ -164,9 +165,15 @@ int main(int argc, char** argv) {
     char nodo[MPI_MAX_PROCESSOR_NAME];
     std::string equipo = "Equipo-MPI-OpenMP";
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rango);
-    MPI_Comm_size(MPI_COMM_WORLD, &procesos);
-    MPI_Get_processor_name(nodo, &longitud);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rango); // identificador del proceso
+    /*
+     - Identificar los mensajes de avance.
+     - Crear una semilla diferente.
+     - Crear un archivo diferente por proceso.
+     - Ordenar la impresión de los arreglos.
+    */
+    MPI_Comm_size(MPI_COMM_WORLD, &procesos); // cuantos procesos hay ejecutandose en ese momento lanzados por MPI
+    MPI_Get_processor_name(nodo, &longitud); // nodo o equipo | el nombre de la computadora donde está ejecutándose el proceso.
     nodo[longitud] = '\0';
     MPI_Query_thread(&nivel);
 
@@ -229,12 +236,12 @@ int main(int argc, char** argv) {
             semilla_base = static_cast<unsigned>(std::time(nullptr));
         }
 
-        MPI_Bcast(
-            &semilla_base,
-            1,
-            MPI_UNSIGNED,
-            0,
-            MPI_COMM_WORLD
+        MPI_Bcast( //  distribuye la semilla base entre los procesos
+            &semilla_base, // semilla en base al tiemp o hora y se empieza a sumar para no ser el mismo y no cometer la misma secuenia
+            1, // 1 solo elemento o semilla
+            MPI_UNSIGNED, // entero mpi sin signo
+            0, // el 0 es el emisor 
+            MPI_COMM_WORLD // hacia todos los procesos!
         );
 
         const unsigned semilla =
@@ -268,12 +275,13 @@ int main(int argc, char** argv) {
         {
             ArregloDinamico arreglo(static_cast<std::size_t>(n));
 
-            MPI_Barrier(MPI_COMM_WORLD);
+            MPI_Barrier(MPI_COMM_WORLD); // barrera de sincronizacion 
 
-            const double inicio = MPI_Wtime();
+            const double inicio = MPI_Wtime(); // inicio contador 
             arreglo.llenar(rango, procesos, nodo, equipo.c_str());
-            const double segundos = MPI_Wtime() - inicio;
-
+            const double segundos = MPI_Wtime() - inicio; // termino
+            // tiempo total de llendo en segundos.
+            // esto es para que cada proceso puede medir su tiempo de llando
             const auto suma = arreglo.verificar();
             const std::string ruta =
                 carpeta + "/arreglo-proceso-" + std::to_string(rango) + ".txt";
@@ -304,7 +312,7 @@ int main(int argc, char** argv) {
             );
 
             for (int turno = 0; turno < procesos; ++turno) {
-                MPI_Barrier(MPI_COMM_WORLD);
+                MPI_Barrier(MPI_COMM_WORLD); // barrera de sincronizacion
 
                 if (turno == rango && !archivos) {
                     std::ifstream entrada(ruta);
@@ -320,14 +328,14 @@ int main(int argc, char** argv) {
 
             unsigned long long total = 0;
 
-            MPI_Reduce(
-                &n,
-                &total,
-                1,
-                MPI_UNSIGNED_LONG_LONG,
-                MPI_SUM,
-                0,
-                MPI_COMM_WORLD
+            MPI_Reduce( // realiza operacion
+                &n, // valor que trabajo el proceso
+                &total, // se entrega a total el resultado
+                1, // 1 dato por proceso
+                MPI_UNSIGNED_LONG_LONG, // tipo de dato long long | 10 millones
+                MPI_SUM, // funcion suma 
+                0, // se va al proceso 0 el resultado
+                MPI_COMM_WORLD // Participan todos los procesos en la actividad o tarea 
             );
 
             if (rango == 0) {
@@ -339,7 +347,7 @@ int main(int argc, char** argv) {
             }
         } // delete[] antes de MPI_Finalize.
 
-        MPI_Finalize();
+        MPI_Finalize(); // Finaliza correctamente el entorno MPI. | arreglo destruido y memoria liberada
         return 0;
     } catch (const std::exception& error) {
         std::fprintf(
@@ -351,7 +359,7 @@ int main(int argc, char** argv) {
             error.what()
         );
 
-        MPI_Abort(MPI_COMM_WORLD, 1);
+        MPI_Abort(MPI_COMM_WORLD, 1); // en el caso de ocurrir un error 
         return 1;
     }
 }

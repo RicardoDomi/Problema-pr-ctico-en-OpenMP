@@ -1,0 +1,2 @@
+CONTENIDO proceso=2/4 nodo=MacBook-Air-7.local equipo=E08 elementos=23
+3 73 3 58 67 2 45 6 49 2 54 21 42 26 23 10 81 49 54 54 90 2 75 

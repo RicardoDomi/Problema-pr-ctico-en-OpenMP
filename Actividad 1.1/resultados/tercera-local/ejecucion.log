@@ -1,0 +1,43 @@
+INICIO proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 n=10000000 semilla=1789950244 hilos_solicitados=2
+INICIO proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 n=10000000 semilla=1789950245 hilos_solicitados=2
+INICIO proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 n=10000000 semilla=1789950246 hilos_solicitados=2
+AVANCE 10% proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=1000000/10000000
+AVANCE 10% proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=1000000/10000000
+AVANCE 10% proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=1000000/10000000
+AVANCE 20% proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=2000000/10000000
+AVANCE 20% proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=2000000/10000000
+AVANCE 20% proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=2000000/10000000
+AVANCE 30% proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=3000000/10000000
+AVANCE 30% proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=3000000/10000000
+AVANCE 30% proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=3000000/10000000
+AVANCE 40% proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=4000000/10000000
+AVANCE 40% proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=4000000/10000000
+AVANCE 40% proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=4000000/10000000
+AVANCE 50% proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=5000000/10000000
+AVANCE 50% proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=5000000/10000000
+AVANCE 50% proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=5000000/10000000
+AVANCE 60% proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=6000000/10000000
+AVANCE 60% proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=6000000/10000000
+AVANCE 60% proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=6000000/10000000
+AVANCE 70% proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=7000000/10000000
+AVANCE 70% proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=7000000/10000000
+AVANCE 70% proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=7000000/10000000
+AVANCE 80% proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=8000000/10000000
+AVANCE 80% proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=8000000/10000000
+AVANCE 80% proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=8000000/10000000
+AVANCE 90% proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=9000000/10000000
+AVANCE 90% proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=9000000/10000000
+AVANCE 90% proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=9000000/10000000
+AVANCE 100% proceso=0/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=10000000/10000000
+TRABAJO proceso=0 nodo=MacBook-Air-7.local equipo=E08 hilo=0 elementos=5007360
+TRABAJO proceso=0 nodo=MacBook-Air-7.local equipo=E08 hilo=1 elementos=4992640
+AVANCE 100% proceso=1/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=10000000/10000000
+TRABAJO proceso=1 nodo=MacBook-Air-7.local equipo=E08 hilo=0 elementos=5007360
+TRABAJO proceso=1 nodo=MacBook-Air-7.local equipo=E08 hilo=1 elementos=4992640
+AVANCE 100% proceso=2/3 nodo=MacBook-Air-7.local equipo=E08 hilo=0 hilos=2 llenados=10000000/10000000
+TRABAJO proceso=2 nodo=MacBook-Air-7.local equipo=E08 hilo=0 elementos=5007360
+TRABAJO proceso=2 nodo=MacBook-Air-7.local equipo=E08 hilo=1 elementos=4992640
+RESULTADO proceso=0 nodo=MacBook-Air-7.local equipo=E08 n=10000000 suma=494997142 segundos_llenado=0.076778 archivo=resultados/tercera-local/arreglo-proceso-0.txt
+RESULTADO proceso=1 nodo=MacBook-Air-7.local equipo=E08 n=10000000 suma=494935740 segundos_llenado=0.078108 archivo=resultados/tercera-local/arreglo-proceso-1.txt
+RESULTADO proceso=2 nodo=MacBook-Air-7.local equipo=E08 n=10000000 suma=494906668 segundos_llenado=0.082858 archivo=resultados/tercera-local/arreglo-proceso-2.txt
+FINAL procesos=3 elementos_totales=30000000
