@@ -1,0 +1,9 @@
+# Ejecutables generados localmente
+memoria_mpi
+memoria_scatter_gather
+
+# Simbolos de depuracion de macOS
+*.dSYM/
+
+# Archivos del sistema
+.DS_Store
