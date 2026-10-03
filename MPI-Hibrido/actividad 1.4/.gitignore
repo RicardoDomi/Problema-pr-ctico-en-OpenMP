@@ -1,0 +1,4 @@
+/cuenta_bancaria
+*.dSYM/
+/logs/
+/hosts.txt
