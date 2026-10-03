@@ -1,0 +1,6 @@
+/arreglos_send_recv
+/arreglos_scatter_gather
+/arreglos_reduce
+*.dSYM/
+/logs/
+/resultados/
