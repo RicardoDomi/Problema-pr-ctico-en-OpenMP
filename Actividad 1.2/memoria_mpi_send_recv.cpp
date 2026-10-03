@@ -532,7 +532,7 @@ int main(int argc, char* argv[])
             break;
         }
 
-        case 2:
+        case 2: //         ******* SUMA *****
         {
             // SUMA: el maestro envia A y B por secciones, cada trabajador suma
             // con OpenMP y el maestro recibe cada resultado parcial.
@@ -545,9 +545,9 @@ int main(int argc, char* argv[])
                 break;
             }
 
-            MPI_Barrier(MPI_COMM_WORLD);
+            MPI_Barrier(MPI_COMM_WORLD); // se sincronizan los procesos antes de comenzar 
 
-            if (mpi_rank == 0)
+            if (mpi_rank == 0) // el proceso maestro
             {
                 inicio = MPI_Wtime();
 
@@ -585,14 +585,23 @@ int main(int argc, char* argv[])
                         TAG_B,
                         MPI_COMM_WORLD
                     );
+
+                    /*
+                      - &A[inicioSeccion]: inicio de los datos enviados.
+                      - cantidad: número de elementos.
+                      - MPI_LONG_LONG: tipo de dato.
+                      - destino: trabajador que los recibirá.
+                      - TAG_A o TAG_B: identifica a qué arreglo pertenece el mensaje.
+                      - MPI_COMM_WORLD: conjunto de procesos participantes.
+                    */
                 }
 
-                for (int origen = 1; origen < mpi_size; origen++)
+                for (int origen = 1; origen < mpi_size; origen++) // el maestro vuelve a recorrer resultado
                 {
                     int inicioSeccion = (origen - 1) * cantidad;
 
                     MPI_Recv(
-                        &R[inicioSeccion],
+                        &R[inicioSeccion], // resultado
                         cantidad,
                         MPI_LONG_LONG,
                         origen,
@@ -626,7 +635,7 @@ int main(int argc, char* argv[])
 
                 printf("Tiempo suma: %.10f segundos\n", fin - inicio);
             }
-            else
+            else // Camino de los trabajadores {ESTO es para los procesos o trabajadores 1,2,3,4}
             {
                 MPI_Recv(
                     A_local,
@@ -671,7 +680,7 @@ int main(int argc, char* argv[])
                     N == 40
                 );
 
-                MPI_Send(
+                MPI_Send( // resultado al maestros
                     R_local,
                     cantidad,
                     MPI_LONG_LONG,
@@ -682,7 +691,7 @@ int main(int argc, char* argv[])
             }
 
             break;
-        }
+        } // TERMINO DE OPERACION -----------
 
         case 3:
         {

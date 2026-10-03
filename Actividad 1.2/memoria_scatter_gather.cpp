@@ -387,12 +387,12 @@ int main(int argc, char* argv[])
 
         MPI_Bcast(&opcion, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-        if (opcion == 1)
+        if (opcion == 1) // Crear Arreglos (GATHER trabaja aqui)
         {
-            MPI_Barrier(MPI_COMM_WORLD);
+            MPI_Barrier(MPI_COMM_WORLD); //sinronizacion de los procesos
             const double inicio = MPI_Wtime();
 
-            if (mpi_rank != 0)
+            if (mpi_rank != 0) // dirigido a proceso trabajador.
             {
                 operaciones.crearArregloMPI(
                     A_local,
@@ -403,6 +403,16 @@ int main(int argc, char* argv[])
                     mpi_rank,
                     detallado
                 );
+
+                /*
+                      A_local,   // Sección local del arreglo A que se llenará
+                      B_local,   // Sección local del arreglo B que se llenará
+                      cantidad,  // Elementos que debe crear este trabajador
+                      N,         // Tamaño total: 40 o 4,000,000
+                      hostname,  // Nombre de la computadora
+                      mpi_rank,  // Número del proceso trabajador
+                      detallado  // Indica si debe imprimir cada elemento
+                */
 
                 if (detallado)
                 {
@@ -429,6 +439,18 @@ int main(int argc, char* argv[])
                 0,
                 MPI_COMM_WORLD
             );
+
+            /*
+                 A_local,         // Bloque que aporta cada proceso
+                 cantidad,        // Número de elementos aportados
+                 MPI_LONG_LONG,   // Tipo de los elementos
+                 A_colectivo,     // Buffer donde el maestro reúne los bloques
+                 cantidad,        // Elementos recibidos por proceso
+                 MPI_LONG_LONG,
+                 0,               // El maestro es MPI 0
+                 MPI_COMM_WORLD
+
+            */
             MPI_Gather(
                 B_local,
                 cantidad,
@@ -440,7 +462,7 @@ int main(int argc, char* argv[])
                 MPI_COMM_WORLD
             );
 
-            if (mpi_rank == 0)
+            if (mpi_rank == 0) // el proceso maestro elimina el bloque auxiliar
             {
                 copiarDesdeBufferColectivo(A_colectivo, A, cantidad, N);
                 copiarDesdeBufferColectivo(B_colectivo, B, cantidad, N);
@@ -478,11 +500,11 @@ int main(int argc, char* argv[])
 
             arreglosCreados = true;
         }
-        else if (opcion >= 2 && opcion <= 5)
+        else if (opcion >= 2 && opcion <= 5) // SUMA ******************** SCATTER trabaja aqui
         {
             if (!arreglosCreados)
             {
-                if (mpi_rank == 0)
+                if (mpi_rank == 0)  // proceso maestro
                 {
                     printf("Primero debe crear los arreglos con la opcion 1.\n");
                 }
@@ -490,16 +512,16 @@ int main(int argc, char* argv[])
             }
 
             const char* operacion = nombreOperacion(opcion);
-            const bool necesitaB = opcion != 5;
+            const bool necesitaB = opcion != 5; // requiere un arreglo b
 
-            MPI_Barrier(MPI_COMM_WORLD);
-            const double inicio = MPI_Wtime();
+            MPI_Barrier(MPI_COMM_WORLD); // sincronizacion de los procesos
+            const double inicio = MPI_Wtime(); // empieza a toma tiempo
 
-            if (mpi_rank == 0 && detallado)
-            {
-                for (int destino = 1; destino < mpi_size; destino++)
+            if (mpi_rank == 0 && detallado) // el proceso maestro necesita saber 
+            { // Detallado es si es la prueba de 40
+                for (int destino = 1; destino < mpi_size; destino++) // recorrer trabajadores
                 {
-                    const int inicioSeccion = (destino - 1) * cantidad;
+                    const int inicioSeccion = (destino - 1) * cantidad; // distriucion 
                     printf(
                         "[Equipo: %s] [Proceso MPI: 0] "
                         "[MPI_Scatter hacia: %d] [Seccion: %d - %d] "
@@ -511,8 +533,9 @@ int main(int argc, char* argv[])
                         operacion
                     );
                 }
-            }
+            } // recoleccion de datos
 
+            // distribucion real.
             // El maestro distribuye A. Su primer bloque es auxiliar.
             MPI_Scatter(
                 A_colectivo,
@@ -524,6 +547,17 @@ int main(int argc, char* argv[])
                 0,
                 MPI_COMM_WORLD
             );
+
+            /*
+              - A_colectivo: arreglo que contiene los bloques que distribuirá el maestro.
+              - Primer cantidad: elementos enviados a cada proceso.
+              - Primer MPI_LONG_LONG: tipo enviado.
+              - A_local: memoria donde cada proceso recibe su bloque.
+              - Segundo cantidad: elementos recibidos.
+              - Segundo MPI_LONG_LONG: tipo recibido.
+              - 0: proceso raíz o maestro.
+              - MPI_COMM_WORLD: conjunto de procesos participantes.
+            */
 
             if (necesitaB)
             {
