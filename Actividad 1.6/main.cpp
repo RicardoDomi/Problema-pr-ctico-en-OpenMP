@@ -8,7 +8,9 @@
 #include <limits>
 #include <memory>
 #include <string>
-
+//Castolo Gonzales Jorge Natanael.
+//Domínguez Alcalá Ricardo.
+//Silva Montes Diego Eduardo
 using Number = unsigned long long;
 enum { RANGE = 10, FOUND, STOP, COMPLETE };
 
@@ -129,7 +131,10 @@ int main(int argc, char** argv) {
     for (;;) {
         int option = 5;
         if (rank == 0) {
-            report(log, "\n--- Menu ---\n1. Ingresar clave personalizada en mayusculas (A-Z, 0-9).\n"
+            report(log, "\nCastolo Gonzales Jorge Natanael.\n"
+                "Domínguez Alcalá Ricardo.\n"
+                "Silva Montes Diego Eduardo\n"
+                "\n--- Menu ---\n1. Ingresar clave personalizada en mayusculas (A-Z, 0-9).\n"
                 "2. Ejecutar busqueda Secuencial (1 nodo, 1 hilo - Linea Base).\n"
                 "3. Ejecutar busqueda Paralelo Distribuido (MPI + OpenMP).\n"
                 "4. Mostrar tabla comparativa de tiempos y Speedup.\n5. Salir.\nSeleccione una opcion:");
