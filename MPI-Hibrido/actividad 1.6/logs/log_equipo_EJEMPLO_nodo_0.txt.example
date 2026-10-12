@@ -1,0 +1,6 @@
+[Equipo: PC-01] [Nodo MPI: 0] [INICIO] Proceso activo | Nivel MPI: 2 | Hilos configurados: 2
+[Equipo: PC-01] [Nodo MPI: 0] [MAESTRO INICIO] Espacio 36^3 = 46656
+[Equipo: PC-01] [Nodo MPI: 0] [RANGO] Nodo 1 recibe [0, 11663]
+[Equipo: PC-01] [Nodo MPI: 0] [HALLAZGO SINCRONO] Nodo 1 | Hilo 0 | Clave: A0B
+[Equipo: PC-01] [Nodo MPI: 0] [PARADA GLOBAL] Orden enviada a todos los trabajadores.
+[Equipo: PC-01] [Nodo MPI: 0] [MAESTRO FIN] Todos los procesos finalizaron limpiamente.

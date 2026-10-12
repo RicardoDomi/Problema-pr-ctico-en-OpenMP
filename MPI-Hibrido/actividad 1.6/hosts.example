@@ -1,0 +1,5 @@
+# Sustituir por los nombres o IP de las tres computadoras.
+# La suma de slots es 5: un maestro y cuatro trabajadores MPI.
+maestro slots=1
+esclavo-macos slots=2
+esclavo-linux slots=2

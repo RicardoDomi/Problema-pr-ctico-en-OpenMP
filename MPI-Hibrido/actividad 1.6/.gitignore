@@ -1,0 +1,6 @@
+fuerza_bruta
+fuerza_bruta.dSYM/
+logs/*
+!logs/.gitkeep
+!logs/*.example
+hosts.txt
