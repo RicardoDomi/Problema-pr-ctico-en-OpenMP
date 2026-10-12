@@ -1,0 +1,5 @@
+busqueda_hibrida
+busqueda_hibrida.dSYM/
+logs/*
+!logs/.gitkeep
+!logs/*.example
