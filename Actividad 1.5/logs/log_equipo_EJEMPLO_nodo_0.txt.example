@@ -1,0 +1,3 @@
+[Equipo: EJEMPLO] [Nodo MPI: 0] [Hilo OpenMP: 0] [Bloque: N/A] [Inicio]
+[Equipo: EJEMPLO] [Nodo MPI: 0] [Hilo OpenMP: 0] [Bloque: 0 - 9] [Algoritmo: Secuencial Local OpenMP] [Estado: Elemento encontrado en indice global: 4]
+[Equipo: EJEMPLO] [Nodo MPI: 0] [Hilo OpenMP: 0] [Bloque: N/A] [Fin] Memoria dinamica liberada antes de MPI_Finalize.
